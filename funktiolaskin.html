@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Function calculator</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"
+        integrity="sha512-Wt1bJGtlnMtGP0dqNFH1xlkLBNpEodaiQ8ZN5JLA5wpc1sUlk/O5uuOMNgvzddzkpvZ9GLyYNa8w2s7rqiTk5Q=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: auto auto;
+            width: 375px;
+            padding: 5px;
+        }
+
+        .grid-item {
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Function Calculator</h1>
+    <br>
+    <form onsubmit="calculate();handleSubmit(event);">
+        <div class="grid-container">
+            <div class="grid-item"><label for="func_id">Function f(x)</label></div>
+            <div class="grid-item"><input type="text" id="func_id"></div>
+            <div class="grid-item"><label for="start_id">Start of x range:</label></div>
+            <div class="grid-item"><input type="number" id="start_id"></div>
+            <div class="grid-item"><label for="end_id">End of x range:</label></div>
+            <div class="grid-item"><input type="number" id="end_id"></div>
+            <div class="grid-item"><label for="step_id">x step: </label></div>
+            <div class="grid-item"><input type="number" id="step_id" min="1" value=1></div>
+            <div class="grid-item"><input type="submit" value="Calculate" id="btn_id"></div>
+        </div>
+    </form>
+    <br>
+    <hr />
+    <div id="container_id" class="container" style="visibility: hidden;">
+        <canvas id="lineChart"></canvas>
+    </div>
+    <output id="output_id"></output>
+
+    <script>
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            return false;
+        }
+        const CHART = document.getElementById("lineChart").getContext("2d");
+
+        let lineChart = new Chart(CHART, {
+            type: "line",
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: "Function calculator",
+                        fill: false,
+                        lineTension: 0.5,
+                        borderColor: "grey",
+                        borderCapStyle: "butt",
+                        data: [],
+                    }]
+            },
+            options: {}
+        });
+
+        function calculate() {
+            document.getElementById("container_id").style.visibility = "visible";
+            reset();
+            let x = parseInt(document.getElementById("start_id").value);
+            let end = parseInt(document.getElementById("end_id").value);
+            let func = document.getElementById("func_id").value;
+            let step = parseInt(document.getElementById("step_id").value);
+            //let step = 0.1;
+
+            for (; x <= end; x = x + step) {
+                with (Math) {
+                    try {
+                        var res = eval(func);
+                        document.getElementById("output_id").innerText += `f(${x}) = ` + res + "\n";
+                        lineChart.data.datasets[0].data.push(res);
+                        lineChart.data.labels.push(x)
+
+                    }
+                    catch (err) {
+                        alert("Function not recognized");
+                        break;
+                    }
+                }
+            }
+            lineChart.update();
+        }
+
+        function reset() {
+            lineChart.data.datasets[0].data = [];
+            lineChart.data.labels = [];
+            document.getElementById("output_id").value = ""
+
+        }
+
+
+    </script>
+
+
+
+</body>
+
+</html>
